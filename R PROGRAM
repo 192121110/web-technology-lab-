@@ -1,0 +1,718 @@
+                                    SET  -  1
+
+#1
+data(airquality)
+head(airquality)
+
+data(airquality)
+mean_temp <- sum(airquality$Temp) / length(airquality$Temp)
+mean_temp
+
+data(airquality)
+may_data <- subset(airquality, Month == 5)
+coldest_day <- may_data[which.min(may_data$Temp),"Day"]
+coldest_day
+
+#2
+data(airquality)
+wind_gt_17 <- airquality[airquality$Wind > 17, ]
+num_days_gt_17 <- nrow(wind_gt_17)
+num_days_gt_17
+
+data(airquality)
+mean_wind <- mean(airquality$Wind)
+median_wind <- median(airquality$Wind)
+mode_wind <- names(table(airquality$Wind))[table(airquality$Wind) == max(table(airquality$Wind))]
+
+data(airquality)
+library(moments)
+wind_skewness <- skewness(airquality$Wind)
+if (wind_skewness > 0) {
+  print("The wind speed data is right-skewed.")
+} else if (wind_skewness < 0) {
+  print("The wind speed data is left-skewed.")
+} else {
+  print("The wind speed data is symmetric.")
+}
+
+
+#3
+data(airquality)
+summary(airquality)
+
+data(airquality)
+hist(airquality$Ozone, main = "Distribution of Ozone", xlab = "Ozone (ppb)")
+
+data(airquality)
+library(reshape2)
+airquality_melted <- melt(airquality, id.vars = c("Month", "Day"))
+airquality_cast <- dcast(airquality_melted, Month ~ variable, mean)
+airquality_cast
+
+#4
+data(airquality)
+missing_values <- sapply(airquality, function(x) sum(is.na(x)))
+missing_values
+
+data(airquality)
+model <- lm(Ozone ~ Solar.R, data = airquality)
+summary(model)
+
+
+
+SET 2
+
+1.
+a.
+tail(iris, 6)
+
+
+b.
+dim(iris)
+str(iris)
+summary(iris)
+apply(iris[, 1:4], 2, sd)
+
+
+c.
+aggregate(iris[, 1:4], by = list(iris$Species), mean)
+aggregate(iris[, 1:4], by = list(iris$Species), sd)
+
+
+
+2.
+a.
+quantile(iris$Sepal.Width)
+quantile(iris$Sepal.Length)
+
+
+b and c
+iris$Sepal.Length.Cate <- cut(iris$Sepal.Length, breaks = quantile(iris$Sepal.Length), labels = c("Q1", "Q2", "Q3", "Q4"))
+iris1 <- aggregate(iris[, 1:4], by = list(iris$Species, iris$Sepal.Length.Cate), mean)
+colnames(iris1)[1] <- "Species"
+colnames(iris1)[2] <- "Sepal.Length.Cate"
+iris1
+
+
+
+
+
+3.
+a.
+library(ggplot2)
+ggplot(iris, aes(x = Sepal.Width, y = Sepal.Length, color = Species)) + geom_point() + labs(title = "Scatter Plot of Sepal Width and Length in Iris Dataset", x = "Sepal Width (cm)", y = "Sepal Length (cm)")
+
+
+b.
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length, color = Species)) + geom_point() + labs(title = "Scatter Plot of Petal Width and Length in Iris Dataset", x = "Petal Width (cm)", y = "Petal Length (cm)")
+
+
+c.
+ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) + geom_boxplot() + labs(title = "Box Plot of Sepal Length in Iris Dataset", x = "Species", y = "Sepal Length (cm)")
+
+
+
+
+
+4.
+a.
+library(caTools)
+set.seed(123)
+split <- sample.split(iris$Species, SplitRatio = 0.5)
+train <- subset(iris, split == TRUE)
+test <- subset(iris, split == FALSE)
+model <- glm(Species ~ Petal.Width + Petal.Length, data = train, family = "binomial")
+summary(model)
+
+
+
+b.
+probabilities <- predict(model, newdata = test, type = "response")
+probabilities
+
+
+
+c.
+predictions <- ifelse(probabilities > 0.5, "versicolor", "setosa")
+table(predictions, test$Species)
+
+
+
+
+
+
+SET 3
+1.
+a.data(mtcars)
+dim(mtcars)
+summary(mtcars)
+
+b.data(mtcars)
+max_hp <- max(mtcars$hp)
+min_hp <- min(mtcars$hp)
+
+
+c.data(mtcars)
+mean_mpg <- aggregate(mpg ~ am, data = mtcars, mean)
+mean_mpg
+
+
+2.
+a.data(mtcars)
+median_hp <- aggregate(hp ~ cyl, data = mtcars, median)
+median_hp
+
+b.
+data(mtcars)
+mean_hp <- mean(mtcars$hp)
+median_hp <- median(mtcars$hp)
+mode_hp <- names(table(mtcars$hp))[table(mtcars$hp) == max(table(mtcars$hp))]
+mean_wt <- mean(mtcars$wt)
+median_wt <- median(mtcars$wt)
+mode_wt <- names(table(mtcars$wt))[table(mtcars$wt) == max(table(mtcars$wt))]
+
+
+c.
+data(mtcars)
+library(moments)
+hp_skewness <- skewness(mtcars$hp)
+wt_skewness <- skewness(mtcars$wt)
+if (hp_skewness > 0) {
+  print("The hp data is right-skewed.")
+} else if (hp_skewness < 0) {
+  print("The hp data is left-skewed.")
+} else {
+  print("The hp data is symmetric.")
+}
+if (wt_skewness > 0) {
+  print("The wt data is right-skewed.")
+} else if (wt_skewness < 0) {
+  print("The wt data is left-skewed.")
+} else {
+  print("The wt data is symmetric.")
+}
+
+
+3.
+a.data(mtcars)
+plot(mtcars$hp, mtcars$mpg, main = "Scatter Plot of mpg vs. hp", xlab = "hp", ylab = "mpg", col = mtcars$am + 1)
+legend("topright", legend = c("Automatic", "Manual"), col = c(1, 2), pch = 1)
+
+
+b.
+data(mtcars)
+boxplot(mpg ~ am, data = mtcars, main = "Box Plot of mpg with Respect to am", xlab = "am", ylab = "mpg")
+
+
+c.
+data(mtcars)
+hist(mtcars$hp, main = "Histogram of hp", xlab = "hp")
+
+
+4.
+a.data(mtcars)
+model <- lm(mpg ~ disp + hp + wt, data = mtcars)
+summary(model)
+
+
+b and c
+data(mtcars)
+model <- lm(mpg ~ disp + hp + wt, data = mtcars)
+new_data <- data.frame(disp = 221, hp = 102, wt = 2.91)
+predicted_mpg <- predict(model, newdata = new_data)
+plot(mtcars$wt, mtcars$mpg, main = "Scatter Plot of mpg vs. wt with Regression Line", xlab = "wt", ylab = "mpg")
+abline(model, col = "red")
+points(new_data$wt
+
+SET 4
+1.
+a.
+data(ChickWeight)
+str(ChickWeight)
+summary(ChickWeight)
+
+
+b.
+data(ChickWeight)
+library(plyr)
+stat_features <- ddply(ChickWeight, .(Diet), summarize, mean = mean(weight), median = median(weight), mode = names(table(weight))[table(weight) == max(table(weight))])
+stat_features <- stat_features[order(stat_features$mean), ]
+stat_features
+
+c.
+data(ChickWeight)
+library(ggplot2)
+ggplot(ChickWeight, aes(x = Time, y = weight)) +
+  geom_point() +
+  ggtitle("Scatter Plot of weight vs. Time") +
+  xlab("Time (days)") +
+  ylab("Weight (grams)")
+hist(ChickWeight$weight, main = "Histogram of weight", xlab = "Weight (grams)")
+plot(ChickWeight$weight, main = "Lag Plot of weight", xlab = "Weight (t)", ylab = "Weight (t+1)")
+qqnorm(ChickWeight$weight)
+qqline(ChickWeight$weight)
+
+
+
+
+2.
+a.
+data(ChickWeight)
+library(reshape2)
+melted_data <- melt(ChickWeight, id.vars = c("Chick", "Time", "Diet"))
+
+
+b.
+data(ChickWeight)
+library(reshape2)
+cast_data <- dcast(ChickWeight, Diet ~ weight, mean)
+
+
+c.
+data(ChickWeight)
+library(plyr)
+mode_func <- function(x) {
+  names(table(x))[table(x) == max(table(x))]
+}
+mode_data <- ddply(ChickWeight, .(Diet), summarize, mode = mode_func(weight))
+
+
+
+
+
+3.
+a.
+data(ChickWeight)
+library(ggplot2)
+ggplot(ChickWeight, aes(x = factor(Diet), y = weight)) +
+  geom_boxplot() +
+  ggtitle("Box Plot of weight Grouped by Diet") +
+  xlab("Diet") +
+  ylab("Weight (grams)")
+
+
+b.
+data(ChickWeight)
+subset_data <- subset(ChickWeight, Diet == 1)
+hist(subset_data$weight, main = "Histogram of weight for Diet-1", xlab = "Weight (grams)")
+
+
+
+c.
+data(ChickWeight)
+library(ggplot2)
+ggplot(ChickWeight, aes(x = Time, y = weight, color = factor(Diet))) +
+  geom_point() +
+  ggtitle("Scatter Plot of weight vs. Time Grouped by Diet") +
+  xlab("Time (days)") +
+  ylab("Weight (grams)")
+
+
+
+
+4.
+a.
+data(ChickWeight)
+model <- lm(weight ~ Time + factor(Diet), data = ChickWeight)
+summary(model)
+
+
+b.
+data(ChickWeight)
+new_data <- data.frame(Time = 10, Diet = 1)
+predicted_weight <- predict(model, newdata = new_data)
+predicted_weight
+
+
+c.
+data(ChickWeight)
+actual_weight <- subset(ChickWeight, Time == 10 & Diet == 1)$weight
+error <- actual_weight - predicted_weight
+error
+
+SET 5
+1.
+a.
+data(USArrests)
+str(USArrests)
+summary(USArrests)
+
+
+b.
+data(USArrests)
+max_rape_state <- row.names(USArrests)[which.max(USArrests$Rape)]
+max_rape_state
+
+
+
+c.
+data(USArrests)
+highest_murder_states <- row.names(USArrests)[order(USArrests$Murder, decreasing = TRUE)[1:3]]
+lowest_murder_states <- row.names(USArrests)[order(USArrests$Murder)[1:3]]
+highest_murder_states
+lowest_murder_states
+
+
+
+
+
+
+2.
+a.
+data(USArrests)
+cor(USArrests)
+
+
+b.
+data(USArrests)
+median_assault <- median(USArrests$Assault)
+high_assault_states <- row.names(USArrests)[USArrests$Assault > median_assault]
+high_assault_states
+
+
+c.
+data(USArrests)
+library(ggplot2)
+ggplot(USArrests, aes(x = Murder)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +
+  ggtitle("Histogram of Murder Arrests by US State") +
+  xlab("Murder Arrests") +
+  ylab("Frequency")
+ggplot(USArrests, aes(x = Murder)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  ggtitle("Density Plot of Murder Arrests by US State") +
+  xlab("Murder Arrests") +
+  ylab("Density")
+
+
+
+
+3.
+a.
+data(USArrests)
+hist(USArrests$Murder, probability = TRUE, main = "Histogram of Murder Arrests by US State", xlab = "Murder Arrests", ylab = "Density")
+lines(density(USArrests$Murder), col = "red")
+
+
+
+b.
+data(USArrests)
+library(ggplot2)
+ggplot(USArrests, aes(x = UrbanPop, y = Murder, color = Assault)) +
+  geom_point() +
+  ggtitle("Relationship Between Murder Arrest Rate and Proportion of Population in Urban Areas") +
+  xlab("Proportion of Population in Urban Areas") +
+  ylab("Murder Arrest Rate") +
+  scale_color_gradient(low = "blue", high = "red")
+
+
+c.
+data(USArrests)
+library(ggplot2)
+ggplot(USArrests, aes(x = row.names(USArrests), y = Murder)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  ggtitle("Murder Rate by US State") +
+  xlab("State") +
+  ylab("Murder Rate")
+
+
+
+
+
+
+
+4.
+a.
+height <- c(131, 174, 138, 186, 128, 136, 179, 163, 152, 170)
+weight <- c(67, 81, 50, 91, 47, 37, 76, 72, 62, 42)
+model <- lm(weight ~ height)
+summary(model)
+
+
+b.
+height <- c(131, 174, 138, 186, 128, 136, 179, 163, 152, 170)
+weight <- c(67, 81, 50, 91, 47, 37, 76, 72, 62, 42)
+new_data <- data.frame(height = 170)
+predicted_weight <- predict(model, newdata = new_data)
+predicted_weight
+plot(height, weight, main = "Relationship Between Height and Weight", xlab = "Height", ylab = "Weight")
+abline(model, col = "red")
+
+
+SET 6 
+1.
+a.
+fibonacci <- function(n) {
+  if (n <= 1) {
+    return(n)
+  } else {
+    return(fibonacci(n-1) + fibonacci(n-2))
+  }
+}
+
+
+b.
+sum <- 0
+for (i in 1:10) {
+  sum <- sum + i
+}
+sum
+
+
+
+2.
+a and b
+values <- c(90, 50, 70, 80, 70, 60, 20, 30, 80, 90, 20)
+mean(values)
+median(values)
+sort(values, decreasing = TRUE)[1:2]
+sort(values)[1:3]
+
+
+
+
+
+3.
+a b and c
+data(mtcars)
+library(ggplot2)
+ggplot(mtcars, aes(x = wt, y = disp, color = factor(cyl))) +
+  geom_point() +
+  ggtitle("Scatter Plot of Weight vs. Displacement, Factor by Engine Cylinders") +
+  xlab("Weight") +
+  ylab("Displacement")
+ggplot(mtcars, aes(x = hp, y = mpg, color = factor(cyl))) +
+  geom_point() +
+  ggtitle("Scatter Plot of Horsepower vs. Mileage, Factor by Engine Cylinders") +
+  xlab("Horsepower") +
+  ylab("Mileage")
+
+
+
+
+
+
+
+
+4.
+height <- c(153, 124, 138, 186, 128, 136, 179, 163, 157, 131)
+weight <- c(103, 81, 36.91, 47, 57, 76, 72, 102.48, 62)
+model <- lm(weight ~ height)
+summary(model)
+new_data <- data.frame(height = 170)
+predicted_weight <- predict(model, newdata = new_data)
+predicted_weight
+plot(height, weight, main = "Relationship Between Height and Weight", xlab = "Height", ylab = "Weight")
+abline(model, col = "red")
+
+
+#SET 8 1a,b,c
+commute_times <- c(17, 16, 20, 24, 22, 15, 21, 15, 17, 22)
+
+maxi <- function(x) {
+  max(x)
+}
+
+avger <- function(x) {
+  mean(x)
+}
+
+mini <- function(x) {
+  min(x)
+}
+
+maxi(commute_times) 
+avger(commute_times) 
+mini(commute_times)
+commute_times[4] <- 18
+avger(commute_times)
+sum(commute_times >= 20)
+
+#2 a
+
+data(iris)
+dim(iris)
+str(iris)
+summary(iris)
+apply(iris[,1:4], 2, sd)
+#2b
+data(iris)
+iris_summary <- aggregate(iris[,1:4], by=list(Species=iris$Species), FUN=function(x) c(mean=mean(x), sd=sd(x)))
+iris_summary
+#2c
+data(iris)
+quantile(iris$Sepal.Width)
+quantile(iris$Sepal.Length)
+
+#3a
+library(ggplot2)
+data(iris)
+ggplot(iris, aes(x = Species, y = Sepal.Length)) + 
+  geom_boxplot()
+#3b
+ggplot(iris, aes(x = Petal.Length, y = Petal.Width, color = Species)) + 
+  geom_point()
+#3c
+data(iris)
+cor(iris[,1:4])
+
+#4a
+
+data(iris)
+set.seed(123)
+
+iris_sample <- iris[sample(nrow(iris)), ]
+train_size <- floor(0.8 * nrow(iris_sample))
+train_data <- iris_sample[1:train_size, ]
+test_data <- iris_sample[(train_size + 1):nrow(iris_sample), ]
+
+model <- glm(Species ~ Petal.Width + Petal.Length, data = train_data, family = "binomial")
+
+summary(model)
+#4b
+test_probs <- predict(model, newdata = test_data, type = "response")
+head(test_probs, n = 10)
+#4c
+library(caret)
+test_preds <- predict(model, newdata = test_data, type = "response")
+test_class <- ifelse(test_preds > 0.5, "versicolor", "setosa")
+confusionMatrix(test_class, test_data$Species)
+
+SET 9
+
+1.
+a.
+mat <- matrix(1:9, nrow = 3)
+mat
+lower_tri <- mat[lower.tri(mat)]
+lower_tri
+upper_tri <- mat[upper.tri(mat)]
+upper_tri
+
+
+
+b.
+mat <- matrix(c(1, 2, 3, 0, 5, 6, 7, 8, 0), nrow = 3)
+sum(mat == 0)
+
+
+
+c.
+mat <- matrix(c(1, 2, 3, 4, 5, -100, 7, 8, 9), nrow = 3)
+mat[mat < 0] <- NA
+mat[is.na(mat)] <- mean(mat, na.rm = TRUE)
+mat
+
+
+
+
+2.
+a.
+values <- c(90, 50, 70, 80, 70, 60, 20, 30, 80, 90, 20, 75, 70, 10, 60, 70, 85, 95, 55, 15)
+mean(values)
+median(values)
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+Mode(values)
+
+
+
+b.
+values <- c(90, 50, 70, 80, 70, 60, 20, 30, 80, 90, 20, 75, 70, 10, 60, 70, 85, 95, 55, 15)
+sort(values, decreasing = TRUE)[1:2]
+sort(values)[4]
+
+
+
+
+3.
+a.
+values <- c(21, 62, 10, 53)
+labels <- c("London", "New York", "Singapore", "Mumbai")
+pie(values, labels = labels, main = "City Pie-Chart", col = rainbow(length(values)))
+legend("topright", labels, cex = 0.8, fill = rainbow(length(values)))
+
+
+b.
+H <- c(7, 12, 28, 3, 41)
+M <- c("mar", "apr", "may", "jun", "Jul")
+barplot(H, names.arg = M, main = "Revenue Chart", xlab = "Month", ylab = "Revenue", col = rainbow(length(H)))
+
+
+
+c.
+values <- c(19, 23, 11, 5, 16, 21, 32, 14, 19, 27, 39, 120, 40, 70, 90)
+hist(values, breaks = seq(0, 130, by = 10), main = "Histogram of Values", xlab = "Values", ylab = "Frequency", col = "blue")
+
+
+
+
+4.sales <- c(9914, 40487, 54324, 50044, 34719, 42551, 94871, 118914, 158484, 131348, 78504, 36284)
+expenditure <- c(1000, 4000, 5000, 4500, 3000, 4000, 9000, 11000, 15000, 12000, 7000, 3000)
+model <- lm(sales ~ expenditure)
+summary(model)
+
+
+
+new_expenditure <- data.frame(expenditure = 13500)
+predict(model, newdata = new_expenditure)
+
+
+
+SET 10
+
+1.
+a.
+recurse_fibonacci <- function(n) {
+  if (n <= 1) {
+    return(n)
+  } else {
+    return(recurse_fibonacci(n-1) + recurse_fibonacci(n-2))
+  }
+}
+for (i in 0:10) {
+  print(recurse_fibonacci(i))
+}
+
+
+
+
+b.
+sum <- 0
+for (i in 1:10) {
+  sum <- sum + i
+}
+print(sum)
+
+
+
+2.
+a b and c
+data(ChickWeight)
+summary(ChickWeight)
+table(ChickWeight$weight)
+tail(ChickWeight, n = 6)
+ChickWeight <- ChickWeight[order(ChickWeight$diet, ChickWeight$weight),]
+
+
+
+
+
+3.
+a b and c
+library(reshape2)
+melted_data <- melt(ChickWeight, id.vars = c("Chick", "Time", "Diet"))
+casted_data <- dcast(melted_data, Diet ~ variable, mean)
+hist(ChickWeight$weight[ChickWeight$diet == 2], main = "Histogram of Weight for Diet-2", xlab = "Weight", ylab = "Frequency", col = "blue")
+
+
+
+4.
+a and b
+model <- lm(weight ~ Time + Diet, data = ChickWeight)
+summary(model)
+new_data <- data.frame(Time = 10, Diet = 1)
+predict(model, newdata = new_data)
+
